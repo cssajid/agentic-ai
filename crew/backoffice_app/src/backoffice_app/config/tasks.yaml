@@ -1,0 +1,103 @@
+document_validation_task:
+  description: >
+    Validate uploaded documents using the provided validation rules.
+
+    Input:
+    - documents
+    - document_rules
+
+    Validation Steps:
+    1. Verify required documents exist
+    2. Validate file formats
+    3. Validate file sizes
+    4. Extract structured data from documents
+    5. Validate required fields
+    6. Detect expired documents if applicable
+
+    Output JSON format:
+    {
+      "is_valid": true,
+      "issues": [],
+      "missing_documents": [],
+      "invalid_documents": [],
+      "extracted_data": {}
+    }
+
+  expected_output: >
+    JSON response containing document validation status,
+    extracted data, and validation issues.
+
+  agent: document_validator
+
+comparison_task:
+  description: >
+    Compare application form data with extracted document data.
+
+    Input:
+    - form_data
+    - extracted_data
+    - comparison_rules
+
+    Comparison Rules:
+    - Match applicant name
+    - Match age/date of birth
+    - Match ID numbers
+    - Match salary if applicable
+
+    Output JSON format:
+    {
+      "matches": true,
+      "mismatches": []
+    }
+
+  expected_output: >
+    JSON response containing comparison result and mismatches.
+
+  agent: comparison_agent
+
+business_rules_task:
+  description: >
+    Validate the application against business rules.
+
+    Input:
+    - form_data
+    - business_rules
+
+    Validation Rules Examples:
+    - Minimum age validation
+    - Salary threshold validation
+    - Allowed country validation
+    - Employment type validation
+
+    Output JSON format:
+    {
+      "rule_passed": true,
+      "violations": []
+    }
+
+  expected_output: >
+    JSON response containing business rule validation result.
+
+  agent: business_rules_agent
+
+decision_task:
+  description: >
+    Make final application decision.
+
+    Inputs:
+    - document validation result
+    - comparison result
+    - business rule result
+    - available actions
+
+    Decision Rules:
+    - Approve if confidence >= 90
+    - Reject if confidence < 50
+    - Otherwise return more_info
+
+  expected_output: >
+    Structured JSON response following FinalRecommendation schema
+
+  agent: decision_agent
+
+  output_file: output/ai_recommendation.json
